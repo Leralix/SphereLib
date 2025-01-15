@@ -1,0 +1,4 @@
+name: SphereLib
+version: '${version}'
+main: org.leralix.lib.SphereLib
+api-version: '1.20'
