@@ -1,6 +1,7 @@
 package org.leralix.lib.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ public abstract class SubCommand {
     public abstract int getArguments();
 
     public abstract String getSyntax();
-    public abstract List<String> getTabCompleteSuggestions(Player player, String currentMessage, String[] args);
+    public abstract List<String> getTabCompleteSuggestions(CommandSender player, String currentMessage, String[] args);
 
-    public abstract void perform(Player player, String[] args);
+    public abstract void perform(CommandSender commandSender, String[] args);
 
     public static List<String> payPlayerSuggestion(String[] args) {
         List<String> suggestions = new ArrayList<>();
@@ -30,5 +31,4 @@ public abstract class SubCommand {
         }
         return suggestions;
     }
-
 }

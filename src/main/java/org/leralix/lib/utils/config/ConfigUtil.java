@@ -4,9 +4,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.leralix.lib.SphereLib;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,9 @@ import java.util.logging.Level;
  * This class is used for config related utilities.
  */
 public class ConfigUtil {
+    private ConfigUtil() {
+        throw new IllegalStateException("Utility class");
+    }
     /**
      * This map is used to store the custom configs.
      */
@@ -38,7 +43,7 @@ public class ConfigUtil {
 
         File configFile = new File(plugin.getDataFolder(), fileName);
         if (!configFile.exists()) {
-            plugin.getLogger().severe(fileName + " does not exist!");
+            plugin.getLogger().severe(() -> fileName + " does not exist!");
             return;
         }
         configs.put(tag, YamlConfiguration.loadConfiguration(configFile));
@@ -60,13 +65,13 @@ public class ConfigUtil {
         List<String> baseFileLines = loadFileAsList(baseFile);
         List<String> currentFileLines = loadFileAsList(currentFile);
 
-        if (baseFileLines != null && currentFileLines != null) {
+        if (!baseFileLines.isEmpty() && !currentFileLines.isEmpty()) {
             boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines);
 
             if (updated) {
-                plugin.getLogger().info("The file " + fileName + " has been updated with missing lines.");
+                plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
             } else {
-                plugin.getLogger().info("No updates were necessary for the file " + fileName + ".");
+                plugin.getLogger().info(() -> "No updates were necessary for the file " + fileName + ".");
             }
         }
     }
@@ -77,7 +82,7 @@ public class ConfigUtil {
      * @return      A list of lines, or null if an error occurs.
      */
     private static List<String> loadFileAsList(InputStream file) {
-        if (file == null) return null;
+        if (file == null) return Collections.emptyList();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file))) {
             List<String> lines = new ArrayList<>();
             String line;
@@ -86,12 +91,13 @@ public class ConfigUtil {
             }
             return lines;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            SphereLib.getPlugin().getLogger().warning("Error while loading file as list : " + file);
+            return Collections.emptyList();
         }
     }
 
     private static List<String> loadFileAsList(File file) {
+        if (file == null) return Collections.emptyList();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             List<String> lines = new ArrayList<>();
             String line;
@@ -100,8 +106,8 @@ public class ConfigUtil {
             }
             return lines;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            SphereLib.getPlugin().getLogger().warning("Error while loading file as list : " + file);
+            return Collections.emptyList();
         }
     }
 
@@ -119,27 +125,21 @@ public class ConfigUtil {
         int indexActual = 0;
 
         for(String wantedLine : baseFileLines){
+            if(actualFileLine.size() <= indexActual){
+                plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
+                mergedLines.add(wantedLine); //Line is new, save it
+                updated = true;
+                continue;
+            }
+
+
             String actualLine = actualFileLine.get(indexActual);
             if(extractKey(wantedLine).equals(extractKey(actualLine))){
                 mergedLines.add(actualLine);
                 indexActual++;
             }
             else {
-                boolean found = false;
-                for(int indexActual2 = indexActual; indexActual2 < actualFileLine.size(); indexActual2++){
-                    actualLine = actualFileLine.get(indexActual2);
-                    if(extractKey(wantedLine).equals(extractKey(actualLine))){
-                        mergedLines.add(actualLine);
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found){
-                    plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
-                    mergedLines.add(wantedLine); //Line is new, save it
-                    updated = true;
-                }
-
+                updated = updateLine(plugin, actualFileLine, wantedLine, indexActual, mergedLines, updated);
             }
         }
 
@@ -147,6 +147,25 @@ public class ConfigUtil {
             writeToFile(mergedLines, file);
         }
 
+        return updated;
+    }
+
+    private static boolean updateLine(Plugin plugin, List<String> actualFileLine, String wantedLine, int indexActual, List<String> mergedLines, boolean updated) {
+        String actualLine;
+        boolean found = false;
+        for(int indexActual2 = indexActual; indexActual2 < actualFileLine.size(); indexActual2++){
+            actualLine = actualFileLine.get(indexActual2);
+            if(extractKey(wantedLine).equals(extractKey(actualLine))){
+                mergedLines.add(actualLine);
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
+            mergedLines.add(wantedLine); //Line is new, save it
+            updated = true;
+        }
         return updated;
     }
 
@@ -184,7 +203,7 @@ public class ConfigUtil {
                 writer.newLine();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            SphereLib.getPlugin().getLogger().warning("Error while writing to file : " + fileToWrite);
         }
     }
 }

@@ -11,7 +11,7 @@ import org.leralix.lib.lang.Lang;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainHelpCommand extends SubCommand {
+public class MainHelpCommand extends PlayerSubCommand {
     CommandManager commandManager;
     public MainHelpCommand(CommandManager commandManager){
         this.commandManager = commandManager;

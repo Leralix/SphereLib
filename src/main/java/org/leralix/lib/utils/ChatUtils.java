@@ -11,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ChatUtils {
 
+    private ChatUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * This method is used to send a clickable message to a player.
      * @param player    The player to send the message to.

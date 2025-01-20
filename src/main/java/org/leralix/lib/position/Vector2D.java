@@ -1,4 +1,4 @@
-package org.leralix.lib.data.position;
+package org.leralix.lib.position;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;

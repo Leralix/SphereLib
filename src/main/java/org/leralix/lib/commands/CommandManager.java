@@ -3,10 +3,7 @@ package org.leralix.lib.commands;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public abstract class CommandManager implements CommandExecutor, TabExecutor, TabCompleter {
 
@@ -36,12 +33,15 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
     public List<String> onTabComplete(CommandSender sender,Command command,String label, String[] args) {
         List<String> suggestions = new ArrayList<>();
 
+        if(!(sender instanceof Player)){
+            return Collections.emptyList();
+        }
+
         if(args.length == 1) {
             for(SubCommand subCmd : subCommands.values()) {
                 if(subCmd.getName().startsWith(args[0].toLowerCase())) {
                     suggestions.add(subCmd.getName());
                 }
-                suggestions.add("help");
             }
             return suggestions;
         }

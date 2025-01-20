@@ -19,6 +19,8 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven { url = "https://plugins.gradle.org/m2/" }
+    gradlePluginPortal()
 }
 
 dependencies {

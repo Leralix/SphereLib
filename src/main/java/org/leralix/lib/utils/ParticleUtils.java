@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.leralix.lib.data.position.Vector3D;
+import org.leralix.lib.position.Vector3D;
 
 /**
  * This class is used to manage particles in the plugin.
