@@ -26,11 +26,9 @@ repositories {
 dependencies {
     implementation 'org.jetbrains:annotations:24.0.0'
     compileOnly "org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT"
-    implementation("dev.triumphteam:triumph-gui:3.1.1")
 }
 
 shadowJar {
-    relocate("dev.triumphteam.gui", "org.leralix.lib.gui")
     relocate 'org.bstats', 'org.leralix.lib'
     archiveClassifier.set('')
 }

@@ -21,7 +21,7 @@ public class SoundUtil {
      * @param soundEnum The sound to play
      */
     public static void playSound(Player player, SoundEnum soundEnum){
-        if(ConfigUtil.getCustomConfig(ConfigTag.TAN).getBoolean("enableSounds",true)){
+        if(ConfigUtil.getCustomConfig(ConfigTag.MAIN).getBoolean("enableSounds",true)){
             SoundData soundData = SoundStorage.getSoundData(soundEnum);
             if(soundData != null)
                 soundData.playSound(player);

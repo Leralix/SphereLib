@@ -35,7 +35,7 @@ public enum Lang {
 
         File file = new File(specificLangFolder, "main.yml");
 
-        boolean replace = ConfigUtil.getCustomConfig(ConfigTag.LIB_LANG).getBoolean("autoUpdateLangFiles",true);
+        boolean replace = ConfigUtil.getCustomConfig(ConfigTag.LANG).getBoolean("autoUpdateLangFiles",true);
 
 
         if(!file.exists() || replace) {

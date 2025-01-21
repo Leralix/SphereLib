@@ -18,7 +18,7 @@ public class SoundStorage {
     private static final Map<SoundEnum, SoundData> soundMap = new EnumMap<>(SoundEnum.class);
 
     public static void init(){
-        ConfigurationSection soundsSection = ConfigUtil.getCustomConfig(ConfigTag.LIB).getConfigurationSection("sounds");
+        ConfigurationSection soundsSection = ConfigUtil.getCustomConfig(ConfigTag.MAIN).getConfigurationSection("sounds");
         if (soundsSection != null) {
             for (String key : soundsSection.getKeys(false)) {
                 List<String> soundValues = soundsSection.getStringList(key);

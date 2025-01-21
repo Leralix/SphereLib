@@ -20,8 +20,8 @@ public final class SphereLib extends JavaPlugin {
         logger.log(Level.INFO, "[SphereLib] -Loading library");
 
         ConfigUtil.saveAndUpdateResource(this, "lang.yml");
-        ConfigUtil.addCustomConfig(this, "lang.yml", ConfigTag.LIB_LANG);
-        String lang = ConfigUtil.getCustomConfig(ConfigTag.LIB_LANG).getString("language");
+        ConfigUtil.addCustomConfig(this, "lang.yml", ConfigTag.LANG);
+        String lang = ConfigUtil.getCustomConfig(ConfigTag.LANG).getString("language");
 
         Lang.loadTranslations(lang);
         logger.info(Lang.LANGUAGE_SUCCESSFULLY_LOADED.get());
@@ -30,7 +30,7 @@ public final class SphereLib extends JavaPlugin {
 
         logger.log(Level.INFO, "[TaN] -Loading Configs");
         ConfigUtil.saveAndUpdateResource(this, "config.yml");
-        ConfigUtil.addCustomConfig(this, "config.yml", ConfigTag.LIB);
+        ConfigUtil.addCustomConfig(this, "config.yml", ConfigTag.MAIN);
 
 
         SoundStorage.init();
