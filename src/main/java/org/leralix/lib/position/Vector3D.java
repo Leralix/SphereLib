@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import java.util.Objects;
 
 public class Vector3D extends Vector2D {
-    private int y;
+    protected int y;
 
     public Vector3D(int x, int y, int z, String worldID) {
         super(x, z, worldID);
