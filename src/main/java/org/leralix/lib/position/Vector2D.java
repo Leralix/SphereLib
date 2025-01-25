@@ -1,6 +1,8 @@
 package org.leralix.lib.position;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Objects;
@@ -15,6 +17,24 @@ public class Vector2D {
         this.x = x;
         this.z = z;
         this.worldID = worldID;
+    }
+
+    public Vector2D(Location location){
+        this.x = location.getBlockX();
+        this.z = location.getBlockZ();
+        this.worldID = location.getWorld().getUID().toString();
+    }
+
+    public Vector2D(Chunk chunk){
+        this.x = chunk.getX();
+        this.z = chunk.getZ();
+        this.worldID = chunk.getWorld().getUID().toString();
+    }
+
+    public Vector2D(Vector3D vector){
+        this.x = vector.getX();
+        this.z = vector.getZ();
+        this.worldID = vector.getWorldID().toString();
     }
 
     public int getX() {
@@ -53,4 +73,12 @@ public class Vector2D {
         return Objects.hash(x, z, worldID);
     }
 
+
+    @Override
+    public String toString() {
+        return "Vector2D{" +
+                "x=" + x +
+                ", z=" + z +
+                ", worldID='" + worldID + "'}";
+    }
 }
