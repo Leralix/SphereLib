@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.leralix.lib.SphereLib;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -47,6 +48,62 @@ public class ConfigUtil {
             return;
         }
         configs.put(tag, YamlConfiguration.loadConfiguration(configFile));
+    }
+
+
+    public static void saveAndUpdateResourceBetter(Plugin plugin, String fileName, List<String> blackListedWords) {
+        File configFile = new File(plugin.getDataFolder(), fileName);
+
+        // Charger la configuration actuelle
+        YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(configFile);
+
+        // Charger la configuration par défaut depuis le fichier JAR
+        InputStream defaultConfigStream = plugin.getResource(fileName);
+        if (defaultConfigStream == null) {
+            plugin.getLogger().warning("Default configuration file not found: " + fileName);
+            return;
+        }
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream, StandardCharsets.UTF_8));
+        // Fusionner les configurations
+        boolean updated = mergeConfigs(currentConfig, defaultConfig, blackListedWords);
+
+        // Sauvegarde si mise à jour
+        if (updated) {
+            try {
+                currentConfig.save(configFile);
+                plugin.getLogger().info("Configuration updated: " + fileName);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to save updated config: " + e.getMessage());
+            }
+        } else {
+            plugin.getLogger().info("No updates necessary for " + fileName);
+        }
+    }
+
+    private static boolean mergeConfigs(YamlConfiguration currentConfig, YamlConfiguration defaultConfig, List<String> blackListedWords) {
+        boolean updated = false;
+
+        for (String key : defaultConfig.getKeys(true)) {
+
+            if(containsKey(blackListedWords, key)){
+                continue;
+            }
+
+            if (!currentConfig.contains(key)) {
+                currentConfig.set(key, defaultConfig.get(key));
+                updated = true;
+            }
+        }
+        return updated;
+    }
+
+    private static boolean containsKey(List<String> blackListedWords, String key) {
+        for(String word : blackListedWords){
+            if(key.startsWith(word)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
