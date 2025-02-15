@@ -8,11 +8,7 @@ import org.leralix.lib.SphereLib;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -51,57 +47,6 @@ public class ConfigUtil {
     }
 
 
-    public static void saveAndUpdateResourceBetter(Plugin plugin, String fileName, List<String> blackListedWords) {
-        File configFile = new File(plugin.getDataFolder(), fileName);
-
-        // Charger la configuration actuelle
-        YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(configFile);
-
-        // Charger la configuration par défaut depuis le fichier JAR
-        InputStream defaultConfigStream = plugin.getResource(fileName);
-        if (defaultConfigStream == null) {
-            plugin.getLogger().warning("Default configuration file not found: " + fileName);
-            return;
-        }
-
-        if(configFile.exists()){
-            plugin.getLogger().warning("Config file not found: " + fileName);
-            plugin.saveResource(fileName, true);
-            return;
-        }
-        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream, StandardCharsets.UTF_8));
-        // Fusionner les configurations
-        boolean updated = mergeConfigs(currentConfig, defaultConfig, blackListedWords);
-
-        // Sauvegarde si mise à jour
-        if (updated) {
-            try {
-                currentConfig.save(configFile);
-                plugin.getLogger().info("Configuration updated: " + fileName);
-            } catch (Exception e) {
-                plugin.getLogger().warning("Failed to save updated config: " + e.getMessage());
-            }
-        } else {
-            plugin.getLogger().info("No updates necessary for " + fileName);
-        }
-    }
-
-    private static boolean mergeConfigs(YamlConfiguration currentConfig, YamlConfiguration defaultConfig, List<String> blackListedWords) {
-        boolean updated = false;
-
-        for (String key : defaultConfig.getKeys(true)) {
-
-            if(containsKey(blackListedWords, key)){
-                continue;
-            }
-
-            if (!currentConfig.contains(key)) {
-                currentConfig.set(key, defaultConfig.get(key));
-                updated = true;
-            }
-        }
-        return updated;
-    }
 
     private static boolean containsKey(List<String> blackListedWords, String key) {
         for(String word : blackListedWords){
@@ -112,11 +57,15 @@ public class ConfigUtil {
         return false;
     }
 
-    /**
-     * Save and update a resource file. If some lines are missing in the current file, they will be added at the correct position.
-     * @param fileName  The name of the resource file.
-     */
-    public static void saveAndUpdateResource(Plugin plugin,final @NotNull String fileName) {
+    public static void saveAndUpdateResource(Plugin plugin, final @NotNull String fileName) {
+        saveAndUpdateResource(plugin, fileName, Collections.emptyList());
+    }
+
+        /**
+         * Save and update a resource file. If some lines are missing in the current file, they will be added at the correct position.
+         * @param fileName  The name of the resource file.
+         */
+    public static void saveAndUpdateResource(Plugin plugin,final @NotNull String fileName, Collection<String> sectionBlacklist) {
         File currentFile = new File(plugin.getDataFolder(), fileName);
         if (!currentFile.exists()) {
             plugin.saveResource(fileName, false);
@@ -129,7 +78,7 @@ public class ConfigUtil {
         List<String> currentFileLines = loadFileAsList(currentFile);
 
         if (!baseFileLines.isEmpty() && !currentFileLines.isEmpty()) {
-            boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines);
+            boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines, sectionBlacklist);
 
             if (updated) {
                 plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
@@ -181,27 +130,42 @@ public class ConfigUtil {
      * @param actualFileLine  The lines from the current file.
      * @return                  True if updates were made, false otherwise.
      */
-    private static boolean mergeAndPreserveLines(Plugin plugin, File file, List<String> baseFileLines, List<String> actualFileLine) {
+    private static boolean mergeAndPreserveLines(Plugin plugin, File file, List<String> baseFileLines, List<String> actualFileLine, Collection<String> sectionBlacklist) {
         List<String> mergedLines = new ArrayList<>();
 
         boolean updated = false;
         int indexActual = 0;
+        boolean inBannedSection = false;
 
-        for(String wantedLine : baseFileLines){
-            if(actualFileLine.size() <= indexActual){
-                plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
-                mergedLines.add(wantedLine); //Line is new, save it
-                updated = true;
+        for (String wantedLine : baseFileLines) {
+            if (actualFileLine.size() <= indexActual) {
+                if (!inBannedSection) {
+                    plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
+                    mergedLines.add(wantedLine);
+                    updated = true;
+                }
+                continue;
+            }
+            String actualLine = actualFileLine.get(indexActual);
+            // Vérifier si on entre dans une section interdite
+            for (String bannedWord : sectionBlacklist) {
+                if (wantedLine.trim().startsWith(bannedWord)) {
+                    System.out.println("Banned section reached ! : " + wantedLine);
+                    inBannedSection = true;
+                    break;
+                }
+            }
+
+            if (inBannedSection) {
+                mergedLines.add(actualLine);
+                indexActual++;
                 continue;
             }
 
-
-            String actualLine = actualFileLine.get(indexActual);
-            if(extractKey(wantedLine).equals(extractKey(actualLine))){
+            if (extractKey(wantedLine).equals(extractKey(actualLine))) {
                 mergedLines.add(actualLine);
                 indexActual++;
-            }
-            else {
+            } else {
                 updated = updateLine(plugin, actualFileLine, wantedLine, indexActual, mergedLines, updated);
             }
         }
