@@ -63,6 +63,12 @@ public class ConfigUtil {
             plugin.getLogger().warning("Default configuration file not found: " + fileName);
             return;
         }
+
+        if(configFile.exists()){
+            plugin.getLogger().warning("Config file not found: " + fileName);
+            plugin.saveResource(fileName, true);
+            return;
+        }
         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream, StandardCharsets.UTF_8));
         // Fusionner les configurations
         boolean updated = mergeConfigs(currentConfig, defaultConfig, blackListedWords);
