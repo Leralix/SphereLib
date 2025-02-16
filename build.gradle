@@ -51,6 +51,7 @@ publishing {
             url = uri("$buildDir/repo") // Répertoire local pour tester
         }
     }
+
 }
 
 // Configuration pour Java 17

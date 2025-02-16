@@ -48,7 +48,7 @@ public class ConfigUtil {
 
 
 
-    private static boolean containsKey(List<String> blackListedWords, String key) {
+    private static boolean containsKey(Collection<String> blackListedWords, String key) {
         for(String word : blackListedWords){
             if(key.startsWith(word)){
                 return true;
@@ -77,15 +77,14 @@ public class ConfigUtil {
         List<String> baseFileLines = loadFileAsList(baseFile);
         List<String> currentFileLines = loadFileAsList(currentFile);
 
-        if (!baseFileLines.isEmpty() && !currentFileLines.isEmpty()) {
-            boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines, sectionBlacklist);
+        boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines, sectionBlacklist);
 
-            if (updated) {
-                plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
-            } else {
-                plugin.getLogger().info(() -> "No updates were necessary for the file " + fileName + ".");
-            }
+        if (updated) {
+            plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
+        } else {
+            plugin.getLogger().info(() -> "No updates were necessary for the file " + fileName + ".");
         }
+
     }
 
     /**
@@ -126,48 +125,76 @@ public class ConfigUtil {
     /**
      * Merge the base file lines into the current file lines, preserving order and comments.
      * @param file              The file to update.
-     * @param baseFileLines     The lines from the base file.
+     * @param pluginFileLines     The lines from the base file.
      * @param actualFileLine  The lines from the current file.
      * @return                  True if updates were made, false otherwise.
      */
-    private static boolean mergeAndPreserveLines(Plugin plugin, File file, List<String> baseFileLines, List<String> actualFileLine, Collection<String> sectionBlacklist) {
+    private static boolean mergeAndPreserveLines(Plugin plugin, File file, List<String> pluginFileLines, List<String> actualFileLine, Collection<String> sectionBlacklist) {
         List<String> mergedLines = new ArrayList<>();
+
 
         boolean updated = false;
         int indexActual = 0;
+        int bannedSectionIndentation = 0;
         boolean inBannedSection = false;
 
-        for (String wantedLine : baseFileLines) {
-            if (actualFileLine.size() <= indexActual) {
-                if (!inBannedSection) {
-                    plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
-                    mergedLines.add(wantedLine);
+        for (String pluginFileLine : pluginFileLines) {
+
+            if(inBannedSection){
+                if(getNbIndentation(pluginFileLine) <= bannedSectionIndentation){
+                    System.out.println("End of banned section : " + pluginFileLine);
+                    inBannedSection = false;
+                }
+                else {
+                    while(getNbIndentation(actualFileLine.get(indexActual)) > bannedSectionIndentation && indexActual < actualFileLine.size()){
+                        String currentLine = actualFileLine.get(indexActual);
+                        mergedLines.add(currentLine);
+                        indexActual++;
+                    }
+                    continue;
+                }
+            }
+
+            if(actualFileLine.size() == indexActual){
+                mergedLines.add(pluginFileLine);
+                plugin.getLogger().info("Added new config line : " + pluginFileLine);
+                updated = true;
+                continue;
+            }
+
+            String currentLine = actualFileLine.get(indexActual);
+            if(pluginFileLine.startsWith("#")){
+                if(currentLine.equals(pluginFileLine)){
+                    indexActual++;
+                }
+                else {
                     updated = true;
                 }
-                continue;
-            }
-            String actualLine = actualFileLine.get(indexActual);
-            // Vérifier si on entre dans une section interdite
-            for (String bannedWord : sectionBlacklist) {
-                if (wantedLine.trim().startsWith(bannedWord)) {
-                    System.out.println("Banned section reached ! : " + wantedLine);
-                    inBannedSection = true;
-                    break;
-                }
-            }
-
-            if (inBannedSection) {
-                mergedLines.add(actualLine);
-                indexActual++;
+                mergedLines.add(pluginFileLine);
                 continue;
             }
 
-            if (extractKey(wantedLine).equals(extractKey(actualLine))) {
-                mergedLines.add(actualLine);
+            String pluginKey = extractKey(pluginFileLine);
+            String currentKey = extractKey(currentLine);
+
+            if(containsKey(sectionBlacklist, pluginKey)){
+                bannedSectionIndentation = getNbIndentation(pluginFileLine);
+                System.out.println("Registering and storing banned section : " + pluginFileLine);
+                inBannedSection = true;
+                mergedLines.add(pluginFileLine);
                 indexActual++;
-            } else {
-                updated = updateLine(plugin, actualFileLine, wantedLine, indexActual, mergedLines, updated);
+                updated = true;
+                continue;
             }
+
+            if(pluginKey.equals(currentKey)){
+                mergedLines.add(currentLine);
+                indexActual++;
+                continue;
+            }
+            mergedLines.add(pluginFileLine);
+            indexActual++;
+            updated = true;
         }
 
         if (updated) {
@@ -175,6 +202,14 @@ public class ConfigUtil {
         }
 
         return updated;
+    }
+
+    private static int getNbIndentation(String pluginFileLine) {
+        int i = 0;
+        while(i < pluginFileLine.length() && pluginFileLine.charAt(i) == ' '){
+            i++;
+        }
+        return i;
     }
 
     private static boolean updateLine(Plugin plugin, List<String> actualFileLine, String wantedLine, int indexActual, List<String> mergedLines, boolean updated) {
