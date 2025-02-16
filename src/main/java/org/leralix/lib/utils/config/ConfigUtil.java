@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.leralix.lib.SphereLib;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -141,17 +140,20 @@ public class ConfigUtil {
         for (String pluginFileLine : pluginFileLines) {
 
             if(inBannedSection){
-                if(getNbIndentation(pluginFileLine) <= bannedSectionIndentation){
-                    System.out.println("End of banned section : " + pluginFileLine);
-                    inBannedSection = false;
+                if(getNbIndentation(pluginFileLine) > bannedSectionIndentation){
+                    continue; //Skip line until end of banned section | pluginConfigSide
                 }
-                else {
-                    while(getNbIndentation(actualFileLine.get(indexActual)) > bannedSectionIndentation && indexActual < actualFileLine.size()){
-                        String currentLine = actualFileLine.get(indexActual);
-                        mergedLines.add(currentLine);
-                        indexActual++;
+                //Then, update the actual file line scroller
+
+                while(actualFileLine.size() > indexActual && inBannedSection){
+                    String actualLine = actualFileLine.get(indexActual);
+
+                    if(getNbIndentation(actualLine) <= bannedSectionIndentation){
+                        inBannedSection = false;
+                        continue;
                     }
-                    continue;
+                    mergedLines.add(actualLine);
+                    indexActual++;
                 }
             }
 
@@ -178,12 +180,15 @@ public class ConfigUtil {
             String currentKey = extractKey(currentLine);
 
             if(containsKey(sectionBlacklist, pluginKey)){
-                bannedSectionIndentation = getNbIndentation(pluginFileLine);
-                System.out.println("Registering and storing banned section : " + pluginFileLine);
                 inBannedSection = true;
-                mergedLines.add(pluginFileLine);
+                bannedSectionIndentation = getNbIndentation(pluginFileLine);
                 indexActual++;
-                updated = true;
+
+                mergedLines.add(pluginFileLine);
+
+                if(!currentKey.equals(pluginKey)){
+                    updated = true;
+                }
                 continue;
             }
 
