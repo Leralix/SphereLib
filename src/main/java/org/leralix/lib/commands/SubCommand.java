@@ -10,7 +10,6 @@ import java.util.List;
 public abstract class SubCommand {
 
     public abstract String getName();
-
     public abstract String getDescription();
     public abstract int getArguments();
 

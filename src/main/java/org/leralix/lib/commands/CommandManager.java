@@ -2,15 +2,18 @@ package org.leralix.lib.commands;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public abstract class CommandManager implements CommandExecutor, TabExecutor, TabCompleter {
 
     protected final HashMap<String, SubCommand> subCommands;
+    protected final String permissionBase;
 
-    protected CommandManager() {
-        subCommands = new HashMap<>();
+    protected CommandManager(String permissionBase){
+        this.permissionBase = permissionBase;
+        this.subCommands = new HashMap<>();
     }
 
     protected void addSubCommand(SubCommand subCommand){
@@ -18,28 +21,34 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (sender instanceof Player p && args.length > 0){
             SubCommand subCommand = subCommands.get(args[0]);
-            if(subCommand != null) {
-                subCommand.perform(p, args);
-                return true;
-            }
+            if(subCommand != null && sender.hasPermission(getFullPermission(subCommand.getName()))){
+                    subCommand.perform(p, args);
+                    return true;
+                }
+
         }
         return false;
     }
 
+    private String getFullPermission(String subCommand){
+        return permissionBase + "." + subCommand;
+    }
+
     @Override
-    public List<String> onTabComplete(CommandSender sender,Command command,String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         List<String> suggestions = new ArrayList<>();
 
-        if(!(sender instanceof Player)){
-            return Collections.emptyList();
-        }
+        //TODO : check if this can be removed
+//        if(!(sender instanceof Player)){
+//            return Collections.emptyList();
+//        }
 
         if(args.length == 1) {
             for(SubCommand subCmd : subCommands.values()) {
-                if(subCmd.getName().startsWith(args[0].toLowerCase())) {
+                if(sender.hasPermission(getFullPermission(subCmd.getName())) && subCmd.getName().startsWith(args[0].toLowerCase())) {
                     suggestions.add(subCmd.getName());
                 }
             }
@@ -48,7 +57,7 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
         SubCommand subCommand = subCommands.get(args[0]);
         if(subCommand == null) return suggestions;
 
-        List<String> subCommandSuggestions = subCommand.getTabCompleteSuggestions((Player) sender, args[0].toLowerCase(), args);
+        List<String> subCommandSuggestions = subCommand.getTabCompleteSuggestions(sender, args[0].toLowerCase(), args);
         if (subCommandSuggestions == null)
             return suggestions;
 
