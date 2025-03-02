@@ -8,7 +8,6 @@ import org.leralix.lib.SphereLib;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * This class is used for config related utilities.
@@ -192,6 +191,8 @@ public class ConfigUtil {
                 continue;
             }
 
+            System.out.println("Plugin key : " + pluginKey + " | Current key : " + currentKey);
+
             if(pluginKey.equals(currentKey)){
                 mergedLines.add(currentLine);
                 indexActual++;
@@ -217,25 +218,6 @@ public class ConfigUtil {
         return i;
     }
 
-    private static boolean updateLine(Plugin plugin, List<String> actualFileLine, String wantedLine, int indexActual, List<String> mergedLines, boolean updated) {
-        String actualLine;
-        boolean found = false;
-        for(int indexActual2 = indexActual; indexActual2 < actualFileLine.size(); indexActual2++){
-            actualLine = actualFileLine.get(indexActual2);
-            if(extractKey(wantedLine).equals(extractKey(actualLine))){
-                mergedLines.add(actualLine);
-                found = true;
-                break;
-            }
-        }
-        if(!found){
-            plugin.getLogger().log(Level.INFO, "Added new config line : {0}", wantedLine);
-            mergedLines.add(wantedLine); //Line is new, save it
-            updated = true;
-        }
-        return updated;
-    }
-
     /**
      * Extracts a key from a configuration line.
      * @param line  The line to process.
@@ -254,7 +236,7 @@ public class ConfigUtil {
         if (line.contains(":")) {
             return line.split(":")[0].trim();
         }
-        return "";
+        return line;
     }
 
     /**
