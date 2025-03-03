@@ -191,8 +191,6 @@ public class ConfigUtil {
                 continue;
             }
 
-            System.out.println("Plugin key : " + pluginKey + " | Current key : " + currentKey);
-
             if(pluginKey.equals(currentKey)){
                 mergedLines.add(currentLine);
                 indexActual++;
