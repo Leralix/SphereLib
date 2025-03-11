@@ -3,4 +3,5 @@ language:
   HELP_DESC: "Show a list explaining all the commands"
   CLICK_TO_GO_NEXT_PAGE: "§fClick to go to the next page"
   CLICK_TO_GO_PREVIOUS_PAGE: "§fClick to go to the previous page"
+  PLEASE_ENTER_A_VALID_NUMBER: "§cPlease enter a valid number"
   PAGE_NUMBER: "§fPage {0}/{1}"

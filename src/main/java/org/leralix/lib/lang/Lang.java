@@ -15,6 +15,7 @@ public enum Lang {
     CLICK_TO_GO_PREVIOUS_PAGE,
     CLICK_TO_GO_NEXT_PAGE,
     PAGE_NUMBER,
+    PLEASE_ENTER_A_VALID_NUMBER,
     ;
 
 

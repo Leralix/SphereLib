@@ -55,7 +55,7 @@ public class MainHelpCommand extends PlayerSubCommand {
                 int page = Integer.parseInt(args[1]);
                 sendHelp(player, page);
             }catch (NumberFormatException e){
-                player.sendMessage("Please enter a valid number");
+                player.sendMessage(Lang.PLEASE_ENTER_A_VALID_NUMBER.get());
             }
         }
     }
