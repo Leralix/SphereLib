@@ -1,11 +1,26 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "7.1.1"
+    id "com.vanniktech.maven.publish" version "0.31.0"
 }
 
-group = 'org.leralix'
+group = 'io.github.leralix'
 version = '0.4.0'
+
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    signAllPublications()
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
+}
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -24,8 +39,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:24.0.0'
-    compileOnly "org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT"
+    api "org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT"
+
 }
 
 shadowJar {
@@ -33,26 +48,6 @@ shadowJar {
     archiveClassifier.set('')
 }
 
-tasks {
-    jar {
-        enabled = false
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact tasks.shadowJar
-        }
-    }
-    repositories {
-        maven {
-            name = "local"
-            url = uri("$buildDir/repo") // Répertoire local pour tester
-        }
-    }
-
-}
 
 // Configuration pour Java 17
 def targetJavaVersion = 17
@@ -66,6 +61,7 @@ java {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release = targetJavaVersion
     }
@@ -79,4 +75,45 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+}
+
+mavenPublishing {
+    coordinates("io.github.leralix", "sphere-lib", version)
+
+    pom {
+        name = "SphereLib"
+        description = "Minecraft plugin library"
+        inceptionYear = "2025"
+        url = "https://github.com/Leralix/SphereLib"
+        licenses {
+            license {
+                name = "GNU General Public License v3.0"
+                url = "https://www.gnu.org/licenses/gpl-3.0.html"
+                distribution = "https://www.gnu.org/licenses/gpl-3.0.html"
+            }
+        }
+        developers {
+            developer {
+                id = '78090544'
+                name = 'Leralix'
+                email = 'leralix98@gmail.com'
+            }
+        }
+        scm {
+            connection = 'scm:git:git://github.com/Leralix/SphereLib.git'
+            developerConnection = 'scm:git:ssh://github.com/Leralix/SphereLib.git'
+            url = 'https://github.com/Leralix/SphereLib'
+        }
+    }
+}
+
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.addStringOption('charset', 'UTF-8')
+    options.addStringOption('docencoding', 'UTF-8')
+}
+
+tasks.withType(PublishToMavenRepository).configureEach {
+    dependsOn tasks.withType(Sign)
 }

@@ -7,8 +7,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -26,7 +24,7 @@ public class CustomNBT {
      * @param tagName   Name of the tag.
      * @param tagValue  {@link String} value of the tag.
      */
-    public static void addCustomStringTag(final @NotNull Plugin pluginToRegister, final @NotNull ItemStack item, final @NotNull  String tagName, final @NotNull String tagValue) {
+    public static void addCustomStringTag(final Plugin pluginToRegister, final ItemStack item, final String tagName, final String tagValue) {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.getPersistentDataContainer().set(
@@ -44,8 +42,7 @@ public class CustomNBT {
      * @param tagName   The name of the tag.
      * @return          The value of the tag, or null if the tag does not exist.
      */
-    @Nullable
-    public static String getCustomStringTag(Plugin plugin, final @NotNull ItemStack item, final @NotNull String tagName) {
+    public static String getCustomStringTag(Plugin plugin, final ItemStack item, final String tagName) {
         if(item.getItemMeta() == null) return null;
         if (item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, tagName), PersistentDataType.STRING)) {
             return item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, tagName), PersistentDataType.STRING);
@@ -53,11 +50,10 @@ public class CustomNBT {
         return null;
     }
 
-    public static void setBockMetaData(Plugin plugin, final @NotNull Block block, final @NotNull String metaData, final @NotNull String value){
+    public static void setBockMetaData(Plugin plugin, final Block block, final String metaData, final String value){
         block.setMetadata(metaData,
                 new FixedMetadataValue(plugin,value));
     }
-    @Nullable
     public static String getBockMetaData(Block block, String metaData){
         if(!block.hasMetadata(metaData))
             return null;

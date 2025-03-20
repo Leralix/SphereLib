@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,7 +27,7 @@ public class HeadUtils {
      * @param lore          The lore of the new created {@link ItemStack}.
      * @return              The head of the player as an {@link ItemStack}.
      */
-    public static @NotNull ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer, List<String> lore){
+    public static ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer, List<String> lore){
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
         if(skullMeta == null){
@@ -48,7 +47,7 @@ public class HeadUtils {
      * @param loreLines     The lore of the new created {@link ItemStack}.
      * @return              The head of the player as an {@link ItemStack}.
      */
-    public static @NotNull ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer,String... loreLines){
+    public static ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer,String... loreLines){
         List<String> lore = Arrays.asList(loreLines);
         return getPlayerHead(headName,offlinePlayer,lore);
     }
@@ -58,7 +57,7 @@ public class HeadUtils {
      * @param loreLines     The lore of the new created {@link ItemStack}.
      * @return              The head of the player as an {@link ItemStack}.
      */
-    public static @NotNull ItemStack getPlayerHead(OfflinePlayer offlinePlayer,String... loreLines){
+    public static ItemStack getPlayerHead(OfflinePlayer offlinePlayer,String... loreLines){
         List<String> lore = Arrays.asList(loreLines);
         return getPlayerHead(offlinePlayer.getName(),offlinePlayer,lore);
     }
@@ -68,7 +67,7 @@ public class HeadUtils {
      * @param offlinePlayer The player to extract the head from.
      * @return              The head of the player as an {@link ItemStack}.
      */
-    public static @NotNull ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer){
+    public static ItemStack getPlayerHead(String headName, OfflinePlayer offlinePlayer){
         return getPlayerHead(headName,offlinePlayer,(List<String>) null);
     }
     /**
@@ -76,7 +75,7 @@ public class HeadUtils {
      * @param offlinePlayer      The name of the new created {@link ItemStack}.
      * @return              The head of the player as an {@link ItemStack}.
      */
-    public static @NotNull ItemStack getPlayerHead(OfflinePlayer offlinePlayer){
+    public static ItemStack getPlayerHead(OfflinePlayer offlinePlayer){
         return getPlayerHead(offlinePlayer.getName(),offlinePlayer);
     }
     /**
@@ -89,24 +88,24 @@ public class HeadUtils {
      * @param lore                  The lore of the new created head.
      * @return                      The {@link ItemStack} with custom texture.
      */
-    public static @NotNull ItemStack makeSkullB64(final @NotNull String name, final @NotNull String base64EncodedString, List<String> lore) {
+    public static ItemStack makeSkullB64(final String name, final String base64EncodedString, List<String> lore) {
         return makeSkullURL(name,getUrlFromBase64_2(base64EncodedString),lore);
     }
 
-    public static @NotNull ItemStack makeSkullURL(final @NotNull String name, final @NotNull String url, String... lore) {
+    public static ItemStack makeSkullURL(final String name, final String url, String... lore) {
         return makeSkull(name,getProfile(createURL(url)),Arrays.asList(lore));
     }
-    public static @NotNull ItemStack makeSkullURL(final @NotNull String name, final @NotNull String url, List<String> lore) {
+    public static ItemStack makeSkullURL(final String name, final String url, List<String> lore) {
         return makeSkull(name,getProfile(createURL(url)),lore);
     }
-    public static @NotNull ItemStack makeSkullURL(final @NotNull String name, final @NotNull URL url, String... lore) {
+    public static ItemStack makeSkullURL(final String name, final URL url, String... lore) {
         return makeSkull(name,getProfile(url),Arrays.asList(lore));
     }
-    public static @NotNull ItemStack makeSkullURL(final @NotNull String name, final @NotNull URL url, List<String> lore) {
+    public static ItemStack makeSkullURL(final String name, final URL url, List<String> lore) {
         return makeSkull(name,getProfile(url),lore);
     }
 
-    public static @NotNull ItemStack makeSkull(final @NotNull String name, final @NotNull PlayerProfile profile, List<String> lore) {
+    public static ItemStack makeSkull(final String name, final PlayerProfile profile, List<String> lore) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         meta.setOwnerProfile(profile);
@@ -159,7 +158,7 @@ public class HeadUtils {
          * @param base64EncodedString   The base64 encoded String of the new head.
          * @return                      The {@link ItemStack} with custom texture.
          */
-    public static @NotNull ItemStack makeSkullB64(final @NotNull String name, final @NotNull String base64EncodedString) {
+    public static ItemStack makeSkullB64(final String name, final String base64EncodedString) {
         return makeSkullB64(name,base64EncodedString, (List<String>) null);
     }
     /**
@@ -172,7 +171,7 @@ public class HeadUtils {
      * @param loreLines             The lore of the new created head.
      * @return                      The {@link ItemStack} with custom texture.
      */
-    public static @NotNull ItemStack makeSkullB64(final @NotNull String name, final @NotNull String base64EncodedString, String... loreLines) {
+    public static ItemStack makeSkullB64(final String name, final String base64EncodedString, String... loreLines) {
         List<String> lore = Arrays.asList(loreLines);
         return makeSkullB64(name,base64EncodedString,lore);
     }
@@ -187,7 +186,7 @@ public class HeadUtils {
      * @param loreLines             Additional lore.
      * @return                      The {@link ItemStack} with custom texture.
      */
-    public static @NotNull ItemStack makeSkullB64(final @NotNull String name, final @NotNull String base64EncodedString, List<String> lore, String... loreLines) {
+    public static ItemStack makeSkullB64(final String name, final String base64EncodedString, List<String> lore, String... loreLines) {
         List<String> lore2 = Arrays.asList(loreLines);
         lore.addAll(lore2);
         return makeSkullB64(name,base64EncodedString,lore);

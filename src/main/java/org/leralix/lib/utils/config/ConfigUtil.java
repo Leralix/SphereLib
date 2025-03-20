@@ -3,7 +3,6 @@ package org.leralix.lib.utils.config;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 import org.leralix.lib.SphereLib;
 
 import java.io.*;
@@ -26,7 +25,7 @@ public class ConfigUtil {
      * @param tag       The tag of the config file.
      * @return          The {@link FileConfiguration } object.
      */
-    public static FileConfiguration getCustomConfig(final @NotNull ConfigTag tag) {
+    public static FileConfiguration getCustomConfig(final ConfigTag tag) {
         return configs.get(tag);
     }
 
@@ -55,7 +54,7 @@ public class ConfigUtil {
         return false;
     }
 
-    public static void saveAndUpdateResource(Plugin plugin, final @NotNull String fileName) {
+    public static void saveAndUpdateResource(Plugin plugin, final String fileName) {
         saveAndUpdateResource(plugin, fileName, Collections.emptyList());
     }
 
@@ -63,7 +62,7 @@ public class ConfigUtil {
          * Save and update a resource file. If some lines are missing in the current file, they will be added at the correct position.
          * @param fileName  The name of the resource file.
          */
-    public static void saveAndUpdateResource(Plugin plugin,final @NotNull String fileName, Collection<String> sectionBlacklist) {
+    public static void saveAndUpdateResource(Plugin plugin,final String fileName, Collection<String> sectionBlacklist) {
         File currentFile = new File(plugin.getDataFolder(), fileName);
         if (!currentFile.exists()) {
             plugin.saveResource(fileName, false);

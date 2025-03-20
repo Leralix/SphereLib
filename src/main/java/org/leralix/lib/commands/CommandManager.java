@@ -2,7 +2,6 @@ package org.leralix.lib.commands;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -21,7 +20,7 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player p && args.length > 0){
             SubCommand subCommand = subCommands.get(args[0]);
             if(subCommand != null && sender.hasPermission(getFullPermission(subCommand.getName()))){
@@ -38,7 +37,7 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> suggestions = new ArrayList<>();
 
         //TODO : check if this can be removed
