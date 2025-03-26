@@ -27,7 +27,10 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
                     subCommand.perform(p, args);
                     return true;
                 }
-
+        }
+        if(sender instanceof Player){
+            new MainHelpCommand(this).perform(sender, args);
+            return true;
         }
         return false;
     }
@@ -39,11 +42,6 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> suggestions = new ArrayList<>();
-
-        //TODO : check if this can be removed
-//        if(!(sender instanceof Player)){
-//            return Collections.emptyList();
-//        }
 
         if(args.length == 1) {
             for(SubCommand subCmd : subCommands.values()) {

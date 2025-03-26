@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'io.github.leralix'
-version = '0.4.0'
+version = '0.4.1'
 
 
 mavenPublishing {
@@ -48,8 +48,7 @@ shadowJar {
 }
 
 
-// Configuration pour Java 17
-def targetJavaVersion = 21
+def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

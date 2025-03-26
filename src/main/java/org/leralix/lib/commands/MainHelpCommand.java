@@ -48,7 +48,7 @@ public class MainHelpCommand extends PlayerSubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if(args.length == 1){
+        if(args.length <= 1){
             sendHelp(player, 0);
         }else{
             try{
