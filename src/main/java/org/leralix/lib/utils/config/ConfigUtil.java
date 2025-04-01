@@ -12,18 +12,20 @@ import java.util.*;
  * This class is used for config related utilities.
  */
 public class ConfigUtil {
-    private ConfigUtil() {
+    ConfigUtil() {
         throw new IllegalStateException("Utility class");
     }
+
     /**
      * This map is used to store the custom configs.
      */
-    private static final Map<ConfigTag, FileConfiguration> configs = new EnumMap<>(ConfigTag.class);
+    static final Map<ConfigTag, FileConfiguration> configs = new EnumMap<>(ConfigTag.class);
 
     /**
      * Get a custom config by its name.
-     * @param tag       The tag of the config file.
-     * @return          The {@link FileConfiguration } object.
+     *
+     * @param tag The tag of the config file.
+     * @return The {@link FileConfiguration } object.
      */
     public static FileConfiguration getCustomConfig(final ConfigTag tag) {
         return configs.get(tag);
@@ -31,7 +33,8 @@ public class ConfigUtil {
 
     /**
      * Load a custom config file into the memory
-     * @param fileName  The name of the file to load
+     *
+     * @param fileName The name of the file to load
      */
     public static void addCustomConfig(Plugin plugin, String fileName, ConfigTag tag) {
 
@@ -44,10 +47,9 @@ public class ConfigUtil {
     }
 
 
-
-    private static boolean containsKey(Collection<String> blackListedWords, String key) {
-        for(String word : blackListedWords){
-            if(key.startsWith(word)){
+    static boolean containsKey(Collection<String> blackListedWords, String key) {
+        for (String word : blackListedWords) {
+            if (key.startsWith(word)) {
                 return true;
             }
         }
@@ -58,11 +60,12 @@ public class ConfigUtil {
         saveAndUpdateResource(plugin, fileName, Collections.emptyList());
     }
 
-        /**
-         * Save and update a resource file. If some lines are missing in the current file, they will be added at the correct position.
-         * @param fileName  The name of the resource file.
-         */
-    public static void saveAndUpdateResource(Plugin plugin,final String fileName, Collection<String> sectionBlacklist) {
+    /**
+     * Save and update a resource file. If some lines are missing in the current file, they will be added at the correct position.
+     *
+     * @param fileName The name of the resource file.
+     */
+    public static void saveAndUpdateResource(Plugin plugin, final String fileName, Collection<String> sectionBlacklist) {
         File currentFile = new File(plugin.getDataFolder(), fileName);
         if (!currentFile.exists()) {
             plugin.saveResource(fileName, false);
@@ -74,22 +77,21 @@ public class ConfigUtil {
         List<String> baseFileLines = loadFileAsList(baseFile);
         List<String> currentFileLines = loadFileAsList(currentFile);
 
-        boolean updated = mergeAndPreserveLines(plugin, currentFile, baseFileLines, currentFileLines, sectionBlacklist);
+        Optional<List<String>> test = mergeAndPreserveLines(baseFileLines, currentFileLines, sectionBlacklist);
 
-        if (updated) {
+        test.ifPresent(list -> {
+            writeToFile(list, currentFile);
             plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
-        } else {
-            plugin.getLogger().info(() -> "No updates were necessary for the file " + fileName + ".");
-        }
-
+        });
     }
 
     /**
      * Load a file as a list of lines.
-     * @param file  The input file.
-     * @return      A list of lines, or null if an error occurs.
+     *
+     * @param file The input file.
+     * @return A list of lines, or null if an error occurs.
      */
-    private static List<String> loadFileAsList(InputStream file) {
+    static List<String> loadFileAsList(InputStream file) {
         if (file == null) return Collections.emptyList();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file))) {
             List<String> lines = new ArrayList<>();
@@ -104,7 +106,7 @@ public class ConfigUtil {
         }
     }
 
-    private static List<String> loadFileAsList(File file) {
+    static List<String> loadFileAsList(File file) {
         if (file == null) return Collections.emptyList();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             List<String> lines = new ArrayList<>();
@@ -121,12 +123,24 @@ public class ConfigUtil {
 
     /**
      * Merge the base file lines into the current file lines, preserving order and comments.
-     * @param file              The file to update.
-     * @param pluginFileLines     The lines from the base file.
+     *
+     * @param pluginFileLines The lines from the base file.
      * @param actualFileLine  The lines from the current file.
-     * @return                  True if updates were made, false otherwise.
+     * @return A list of lines to write to the current file, or {@link Optional#empty()} if no update is needed.
      */
-    private static boolean mergeAndPreserveLines(Plugin plugin, File file, List<String> pluginFileLines, List<String> actualFileLine, Collection<String> sectionBlacklist) {
+    static Optional<List<String>> mergeAndPreserveLines(List<String> pluginFileLines, List<String> actualFileLine) {
+        return mergeAndPreserveLines(pluginFileLines, actualFileLine, Collections.emptyList());
+    }
+
+    /**
+     * Merge the base file lines into the current file lines, preserving order and comments.
+     *
+     * @param pluginFileLines  The lines from the base file.
+     * @param actualFileLine   The lines from the current file.
+     * @param sectionBlacklist A list of sections to ignore.
+     * @return A list of lines to write to the current file, or {@link Optional#empty()} if no update is needed.
+     */
+    static Optional<List<String>> mergeAndPreserveLines(List<String> pluginFileLines, List<String> actualFileLine, Collection<String> sectionBlacklist) {
         List<String> mergedLines = new ArrayList<>();
 
 
@@ -135,81 +149,97 @@ public class ConfigUtil {
         int bannedSectionIndentation = 0;
         boolean inBannedSection = false;
 
+        PluginSideBlacklist pluginSideBlacklist = new PluginSideBlacklist(sectionBlacklist);
+
+
         for (String pluginFileLine : pluginFileLines) {
 
-            if(inBannedSection){
-                if(getNbIndentation(pluginFileLine) > bannedSectionIndentation){
-                    continue; //Skip line until end of banned section | pluginConfigSide
-                }
-                //Then, update the actual file line scroller
+            if (inBannedSection) {
 
-                while(actualFileLine.size() > indexActual && inBannedSection){
+                while (actualFileLine.size() > indexActual  && inBannedSection) {
                     String actualLine = actualFileLine.get(indexActual);
 
-                    if(getNbIndentation(actualLine) <= bannedSectionIndentation){
+                    if (getNbIndentation(actualLine) <= bannedSectionIndentation && !actualLine.isBlank()) {
                         inBannedSection = false;
                         continue;
                     }
                     mergedLines.add(actualLine);
                     indexActual++;
                 }
+
             }
 
-            if(actualFileLine.size() == indexActual){
+            if(pluginSideBlacklist.isInBackListPart(pluginFileLine)) {
+                continue;
+            }
+
+            //If index is out of bonds, accept all incomming config lines
+            if(indexActual >= actualFileLine.size()){
                 mergedLines.add(pluginFileLine);
-                plugin.getLogger().info("Added new config line : " + pluginFileLine);
                 updated = true;
                 continue;
             }
 
             String currentLine = actualFileLine.get(indexActual);
-            if(pluginFileLine.startsWith("#")){
-                if(currentLine.equals(pluginFileLine)){
-                    indexActual++;
-                }
-                else {
-                    updated = true;
-                }
-                mergedLines.add(pluginFileLine);
-                continue;
-            }
 
             String pluginKey = extractKey(pluginFileLine);
             String currentKey = extractKey(currentLine);
 
-            if(containsKey(sectionBlacklist, pluginKey)){
+            if (containsKey(sectionBlacklist, pluginKey)) {
                 inBannedSection = true;
                 bannedSectionIndentation = getNbIndentation(pluginFileLine);
                 indexActual++;
-
                 mergedLines.add(pluginFileLine);
-
-                if(!currentKey.equals(pluginKey)){
+                if (!currentKey.equals(pluginKey)) {
                     updated = true;
                 }
                 continue;
             }
 
-            if(pluginKey.equals(currentKey)){
-                mergedLines.add(currentLine);
-                indexActual++;
+            if (pluginFileLine.startsWith("#")) {
+                if (currentLine.equals(pluginFileLine)) {
+                    indexActual++;
+                } else {
+                    updated = true;
+                }
+                mergedLines.add(pluginFileLine);
                 continue;
             }
-            mergedLines.add(pluginFileLine);
-            indexActual++;
-            updated = true;
+
+            int existingIndex = findLineIndexWithKey(actualFileLine, indexActual, pluginKey);
+            if (existingIndex != -1) {
+                if (existingIndex != indexActual) {
+                    updated = true;
+                }
+                mergedLines.add(actualFileLine.get(existingIndex));
+                indexActual = existingIndex + 1;
+                continue;
+            }
+
+            if (pluginKey.equals(currentKey)) {
+                mergedLines.add(currentLine);
+                indexActual++;
+            } else {
+                mergedLines.add(pluginFileLine);
+                updated = true;
+            }
         }
 
-        if (updated) {
-            writeToFile(mergedLines, file);
-        }
-
-        return updated;
+        return updated ? Optional.of(mergedLines) : Optional.empty();
     }
 
-    private static int getNbIndentation(String pluginFileLine) {
+    private static int findLineIndexWithKey(List<String> lines, int startIndex, String key) {
+        for (int i = startIndex; i < lines.size(); i++) {
+            if (extractKey(lines.get(i)).equals(key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    static int getNbIndentation(String pluginFileLine) {
         int i = 0;
-        while(i < pluginFileLine.length() && pluginFileLine.charAt(i) == ' '){
+        while (i < pluginFileLine.length() && pluginFileLine.charAt(i) == ' ') {
             i++;
         }
         return i;
@@ -217,17 +247,18 @@ public class ConfigUtil {
 
     /**
      * Extracts a key from a configuration line.
-     * @param line  The line to process.
-     * @return      The key if found, or null otherwise.
+     *
+     * @param line The line to process.
+     * @return The key if found, or null otherwise.
      */
-    private static String extractKey(String line) {
-        if(line == null)
+    static String extractKey(String line) {
+        if (line == null)
             return "";
         line = line.trim();
         if (line.isEmpty()) {
             return "";
         }
-        if(line.startsWith("#")){
+        if (line.startsWith("#")) {
             return line;
         }
         if (line.contains(":")) {
@@ -238,10 +269,11 @@ public class ConfigUtil {
 
     /**
      * Write a list of lines to a file.
-     * @param lines         The list of lines to write.
-     * @param fileToWrite   The file to write to.
+     *
+     * @param lines       The list of lines to write.
+     * @param fileToWrite The file to write to.
      */
-    private static void writeToFile(List<String> lines, File fileToWrite) {
+    static void writeToFile(List<String> lines, File fileToWrite) {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToWrite, false))) {
             for (String line : lines) {

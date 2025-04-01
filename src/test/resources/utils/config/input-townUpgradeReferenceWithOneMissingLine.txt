@@ -1,0 +1,9 @@
+#Newly added text in the file
+upgrades:
+
+  CITY_HALL: # "City hall" upgrade is already unlocked when creating a town.
+    benefits:
+      PLAYER_CAP: +3
+      CHUNK_CAP: +100
+
+missingLine : "I am the missing line"
