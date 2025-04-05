@@ -8,15 +8,18 @@ public enum CardinalPoint {
     WEST;
 
     public static CardinalPoint getCardinalPoint(float yaw) {
-        if (yaw >= 45 && yaw < 135) {
-            return EAST;
-        } else if (yaw >= 135 && yaw < 225) {
-            return SOUTH;
-        } else if (yaw >= 225 && yaw < 315) {
+
+        if(yaw <= 135 && yaw > 45){
             return WEST;
-        } else {
-            return NORTH;
         }
+        if(yaw <=45 && yaw > -45){
+            return SOUTH;
+        }
+        if(yaw <= -45 && yaw > -135){
+            return EAST;
+        }
+        return NORTH;
     }
+
 
 }
