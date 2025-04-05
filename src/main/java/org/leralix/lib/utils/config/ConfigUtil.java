@@ -30,21 +30,25 @@ public class ConfigUtil {
     public static FileConfiguration getCustomConfig(final ConfigTag tag) {
         return configs.get(tag);
     }
-
-    /**
-     * Load a custom config file into the memory
-     *
-     * @param fileName The name of the file to load
-     */
     public static void addCustomConfig(Plugin plugin, String fileName, ConfigTag tag) {
-
         File configFile = new File(plugin.getDataFolder(), fileName);
         if (!configFile.exists()) {
             plugin.getLogger().severe(() -> fileName + " does not exist!");
             return;
         }
-        configs.put(tag, YamlConfiguration.loadConfiguration(configFile));
+        addCustomConfig(configFile, tag);
     }
+
+    /**
+     * Load a custom config file into the memory
+     *
+     * @param file The file to load
+     * @param tag  The tag to associate with
+     */
+    public static void addCustomConfig(File file, ConfigTag tag) {
+        configs.put(tag, YamlConfiguration.loadConfiguration(file));
+    }
+
 
 
     static boolean containsKey(Collection<String> blackListedWords, String key) {
