@@ -2,6 +2,7 @@ package org.leralix.lib;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.leralix.lib.data.PluginVersion;
 import org.leralix.lib.data.SoundStorage;
 import org.leralix.lib.lang.Lang;
 import org.leralix.lib.utils.config.ConfigTag;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 
 public final class SphereLib extends JavaPlugin {
     public static Plugin plugin;
+    public static final PluginVersion pluginVersion = new PluginVersion(0,4,3);
 
     @Override
     public void onEnable() {
@@ -44,5 +46,9 @@ public final class SphereLib extends JavaPlugin {
 
     public static Plugin getPlugin() {
         return plugin;
+    }
+
+    public static PluginVersion getPluginVersion() {
+        return pluginVersion;
     }
 }
