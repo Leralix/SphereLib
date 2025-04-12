@@ -21,10 +21,10 @@ public abstract class CommandManager implements CommandExecutor, TabExecutor, Ta
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player p && args.length > 0){
+        if (args.length > 0){
             SubCommand subCommand = subCommands.get(args[0]);
             if(subCommand != null && sender.hasPermission(getFullPermission(subCommand.getName()))){
-                    subCommand.perform(p, args);
+                    subCommand.perform(sender, args);
                     return true;
                 }
         }

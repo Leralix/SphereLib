@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'io.github.leralix'
-version = '0.4.3'
+version = '0.4.4'
 
 
 mavenPublishing {
@@ -120,6 +120,6 @@ tasks.withType(Javadoc).configureEach {
     options.addStringOption('docencoding', 'UTF-8')
 }
 
-tasks.withType(PublishToMavenRepository).configureEach {
-    dependsOn tasks.withType(Sign)
-}
+// tasks.withType(PublishToMavenRepository).configureEach {
+//     dependsOn tasks.withType(Sign)
+// }
