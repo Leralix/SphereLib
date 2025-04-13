@@ -120,6 +120,6 @@ tasks.withType(Javadoc).configureEach {
     options.addStringOption('docencoding', 'UTF-8')
 }
 
-// tasks.withType(PublishToMavenRepository).configureEach {
-//     dependsOn tasks.withType(Sign)
-// }
+tasks.withType(PublishToMavenRepository).configureEach {
+ dependsOn tasks.withType(Sign)
+}
