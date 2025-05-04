@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public final class SphereLib extends JavaPlugin {
     public static Plugin plugin;
-    public static final PluginVersion pluginVersion = new PluginVersion(0,4,3);
+    public static final PluginVersion pluginVersion = new PluginVersion(0,4,4);
 
     @Override
     public void onEnable() {
