@@ -158,9 +158,10 @@ public class ConfigUtil {
 
         for (String pluginFileLine : pluginFileLines) {
 
-            if (inBannedSection) {
 
-                while (actualFileLine.size() > indexActual  && inBannedSection) {
+            //Banned section handling. Keep adding actual lines until the end of the banned section is reached.
+            if (inBannedSection) {
+                while (actualFileLine.size() > indexActual && inBannedSection) {
                     String actualLine = actualFileLine.get(indexActual);
 
                     if (getNbIndentation(actualLine) <= bannedSectionIndentation && !actualLine.isBlank()) {
@@ -170,15 +171,14 @@ public class ConfigUtil {
                     mergedLines.add(actualLine);
                     indexActual++;
                 }
-
             }
 
-            if(pluginSideBlacklist.isInBackListPart(pluginFileLine)) {
+            if (pluginSideBlacklist.isInBackListPart(pluginFileLine)) {
                 continue;
             }
 
-            //If index is out of bonds, accept all incomming config lines
-            if(indexActual >= actualFileLine.size()){
+            //If the index is out of bonds, accept all incomming config lines
+            if (indexActual >= actualFileLine.size()) {
                 mergedLines.add(pluginFileLine);
                 updated = true;
                 continue;
@@ -189,6 +189,14 @@ public class ConfigUtil {
             String pluginKey = extractKey(pluginFileLine);
             String currentKey = extractKey(currentLine);
 
+            //If the current line is empty, skip it
+            if (currentLine.isBlank() && pluginFileLine.isBlank()) {
+                indexActual++;
+                mergedLines.add(pluginFileLine);
+                continue;
+            }
+
+            //Check if the current line is the start of a blacklisted section
             if (containsKey(sectionBlacklist, pluginKey)) {
                 inBannedSection = true;
                 bannedSectionIndentation = getNbIndentation(pluginFileLine);
@@ -200,6 +208,7 @@ public class ConfigUtil {
                 continue;
             }
 
+            //Case current line is a comment: Replace it if not equal to the plugin line
             if (pluginFileLine.startsWith("#")) {
                 if (currentLine.equals(pluginFileLine)) {
                     indexActual++;
@@ -210,7 +219,7 @@ public class ConfigUtil {
                 continue;
             }
 
-            int existingIndex = findLineIndexWithKey(actualFileLine, indexActual, pluginKey);
+            int existingIndex = findLineIndexWithKey(actualFileLine, indexActual - 1, pluginKey);
             if (existingIndex != -1) {
                 if (existingIndex != indexActual) {
                     updated = true;
@@ -233,6 +242,10 @@ public class ConfigUtil {
     }
 
     private static int findLineIndexWithKey(List<String> lines, int startIndex, String key) {
+        //Due to the use of blank lines, startIndex can be -1.In this case.
+        if(startIndex < 0)
+            startIndex = 0;
+
         for (int i = startIndex; i < lines.size(); i++) {
             if (extractKey(lines.get(i)).equals(key)) {
                 return i;

@@ -1,0 +1,233 @@
+########################
+
+#Defines the number of days before reseting player's placed blocks.
+blockPlacedResetDays: 10
+
+#Set the default number of digits for the market prices.
+nbDigits: 2
+
+########################
+##  RARES RESSOURCES  ##
+########################
+
+#Rare ressources are new items that will be added to the base loot of a block, entity or fishing. They will have a custom name and a custom model data can be applied.
+rareRessources:
+  rareStone :
+    enabled: true
+    name : "Rare Stone"
+    material: "EMERALD"
+    customModelData: 101
+    dropChance:
+      blocks:
+        GOLD_ORE:
+          baseChance: 17
+          FortuneModifier: 1
+          allowSilkTouch: false
+        DEEPSLATE_GOLD_ORE:
+          baseChance: 17
+          FortuneModifier: 1
+          allowSilkTouch: false
+        DIAMOND_ORE:
+          baseChance: 22
+          FortuneModifier: 1
+          allowSilkTouch: false
+        EMERALD_ORE:
+          baseChance: 50
+          FortuneModifier: 10
+          allowSilkTouch: false
+        DEEPSLATE_EMERALD_ORE:
+          baseChance: 50
+          FortuneModifier: 10
+          allowSilkTouch: false
+        REDSTONE_ORE:
+          baseChance: 10
+          FortuneModifier: 1
+          allowSilkTouch: false
+        DEEPSLATE_REDSTONE_ORE:
+          baseChance: 10
+          FortuneModifier: 1
+          allowSilkTouch: false
+        LAPIS_ORE:
+          baseChance: 15
+          FortuneModifier: 1
+          allowSilkTouch: false
+        DEEPSLATE_LAPIS_ORE:
+          baseChance: 15
+          FortuneModifier: 1
+          allowSilkTouch: false
+  rareWood:
+    enabled: true
+    name : "Rare Wood"
+    material: "STICK"
+    customModelData: 101
+    dropChance:
+      blocks:
+        ACACIA_LOG:
+          baseChance: 5
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+        BIRCH_LOG:
+          baseChance: 5
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+        DARK_OAK_LOG:
+          baseChance: 5
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+        JUNGLE_LOG:
+          baseChance: 2
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+        OAK_LOG:
+          baseChance: 3
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+        SPRUCE_LOG:
+          baseChance: 2
+          FortuneModifier: 1
+          allowPlacedByPlayer: false
+  rareCrops:
+    enabled: true
+    name : "Rare Crops"
+    material: "WHEAT"
+    customModelData: 101
+    dropChance:
+      blocks:
+        WHEAT:
+          baseChance: 3
+          FortuneModifier: 1
+        CARROTS:
+          baseChance: 2
+          FortuneModifier: 1
+        POTATOES:
+          baseChance: 2
+          FortuneModifier: 1
+        BEETROOTS:
+          baseChance: 2
+          FortuneModifier: 1
+        PUMPKIN:
+          baseChance: 5
+          FortuneModifier: 1
+        MELON:
+          baseChance: 5
+          FortuneModifier: 1
+  rareSoul:
+    enabled: true
+    name : "Rare Soul"
+    material: "FLINT"
+    customModelData: 101
+    dropChance:
+      entities:
+        ZOMBIE:
+          baseChance: 5
+        CREEPER:
+          baseChance: 15
+        SKELETON:
+          baseChance: 5
+        SPIDER:
+          baseChance: 5
+        ENDERMAN:
+          baseChance: 25
+        WITCH:
+          baseChance: 10
+        PIGLIN:
+          baseChance: 5
+        PIGLIN_BRUTE:
+          baseChance: 5
+        ZOMBIFIED_PIGLIN:
+          baseChance: 0
+        HUSK:
+          baseChance: 15
+        STRAY:
+          baseChance: 15
+        CAVE_SPIDER:
+          baseChance: 5
+        DROWNED:
+          baseChance: 10
+        BLAZE:
+          baseChance: 10
+        GHAST:
+          baseChance: 75
+  rareFish:
+    enabled: true
+    name : "Rare Fish"
+    material: "COD"
+    customModelData: 101
+    dropChance:
+      fishing:
+        COD:
+          baseChance: 4
+          replaceVanilla: true
+        SALMON:
+          baseChance: 4
+          replaceVanilla: true
+        PUFFERFISH:
+          baseChance: 8
+          replaceVanilla: true
+        TROPICAL_FISH:
+          baseChance: 12
+          replaceVanilla: true
+
+#It is also possible to add vanilla ressources to the rare ressources list from the GUI.
+
+########################
+##    Vanilla items   ##
+########################
+
+#Use the following format to add vanilla items to the rare ressources list.
+#Syntax is <identifier> : [<id>,<MATERIAL>]
+
+marketItem:
+  diamond_market : "DIAMOND"
+
+
+########################
+##     Market items   ##
+########################
+
+#movingAverage [default "defaultMovingAverage"]: the number of hours sold items are kept in memory for the rare ressource market.
+#minPrice [default "defaultMinPrice"]: the minimum price of the rare ressource.
+#maxPrice [default "defaultMaxPrice"]: the maximum price of the rare ressource.
+#basePrice : the base price of the rare ressource at day 1.
+#volatility : the volatility of the rare ressource. A higher volatility means that the market price will fluctuate more.
+#demandMultiplier [default "defaultDemandMultiplier"]: Multiply demand of the market. Base demand is 1 for each player connected in the last 7 days.
+
+stockMarket:
+  rareStone :
+    basePrice : 5.0
+    volatility : 0.25
+    demandMultiplier : 5.0
+    maxPrice : 15.0
+    percentForMaxPrice : 0.1
+    minPrice : 0.5
+    percentForMinPrice : 3.0
+  rareWood :
+    basePrice : 3.0
+    volatility : 0.4
+    demandMultiplier : 7.5
+    maxPrice : 8.5
+    minPrice : 0.2
+  rareCrops :
+    basePrice : 2.0
+    volatility : 0.65
+    demandMultiplier : 10.0
+    maxPrice : 7.0
+    minPrice : 0.1
+  rareSoul :
+    basePrice : 7.0
+    volatility : 0.35
+    demandMultiplier : 4.0
+    maxPrice : 20.0
+    minPrice : 1.0
+  rareFish :
+    basePrice : 4.0
+    volatility : 0.45
+    demandMultiplier : 10.0
+    maxPrice : 25.0
+    minPrice : 0.5
+  diamond_market:
+    basePrice: 5.0
+    volatility: 0.3
+    demandMultiplier: 7.0
+    maxPrice: 10.0
+    minPrice: 0.5

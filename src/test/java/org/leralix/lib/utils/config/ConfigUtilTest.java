@@ -3,12 +3,15 @@ package org.leralix.lib.utils.config;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigUtilTest {
+
+    private static String PATH = "utils/config/";
 
     /**
      * Test of the {@link ConfigUtil#mergeAndPreserveLines(List, List)} method.
@@ -19,7 +22,7 @@ class ConfigUtilTest {
     void sameTextLinesTest() {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        List<String> textInFolder = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgrade.txt"));
+        List<String> textInFolder = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgrade.txt"));
 
         Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(textInFolder, textInFolder);
 
@@ -35,8 +38,8 @@ class ConfigUtilTest {
     void missingCommentTest() {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgrade.txt"));
-        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgradeReference.txt"));
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgrade.txt"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgradeReference.txt"));
 
         Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText);
 
@@ -55,8 +58,8 @@ class ConfigUtilTest {
     void modifyingValueTest() {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgrade.txt"));
-        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgradeReference.txt"));
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgrade.txt"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgradeReference.txt"));
 
         Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText);
 
@@ -76,8 +79,8 @@ class ConfigUtilTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         List<String> blackList = List.of("upgrades");
-        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgrade.txt"));
-        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgradeReference.txt"));
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgrade.txt"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgradeReference.txt"));
 
         Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, blackList);
 
@@ -97,8 +100,8 @@ class ConfigUtilTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         List<String> blackList = List.of("upgrades");
-        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgrade.txt"));
-        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream("utils/config/input-townUpgradeReferenceWithOneMissingLine.txt"));
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgrade.txt"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "input-townUpgradeReferenceWithOneMissingLine.txt"));
 
         Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, blackList);
 
@@ -107,4 +110,24 @@ class ConfigUtilTest {
         assertEquals(referenceText.size(), fileToWrite.get().size());
     }
 
+
+    /**
+     * Test on the configuration file of ExoticTrades.
+     */
+    @Test
+    void exoticTradesConfigTest() {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "exotictrades/firstInput.yml"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "exotictrades/modifiedInput.yml"));
+
+        List<String> blackList = new ArrayList<>();
+        blackList.add("rareRessources");
+        blackList.add("stockMarket");
+        blackList.add("marketItem");
+        Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, blackList);
+
+        assertTrue(fileToWrite.isPresent());
+        assertTrue(fileToWrite.get().contains("    enabled: true"));
+    }
 }
