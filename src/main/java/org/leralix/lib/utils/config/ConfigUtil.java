@@ -208,16 +208,6 @@ public class ConfigUtil {
                 continue;
             }
 
-            //Case current line is a comment: Replace it if not equal to the plugin line
-            if (pluginFileLine.startsWith("#")) {
-                if (currentLine.equals(pluginFileLine)) {
-                    indexActual++;
-                } else {
-                    updated = true;
-                }
-                mergedLines.add(pluginFileLine);
-                continue;
-            }
 
             int existingIndex = findLineIndexWithKey(actualFileLine, indexActual - 1, pluginKey);
             if (existingIndex != -1) {
