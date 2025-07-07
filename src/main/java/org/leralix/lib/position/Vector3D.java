@@ -17,20 +17,24 @@ public class Vector3D extends Vector2D {
         this.y = location.getBlockY();
     }
 
-
     public int getY() {
         return y;
     }
+
     public void setY(int y) {
         this.y = y;
     }
 
+    public double getDistance(Vector3D other) {
+        return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(z - other.z, 2) + Math.pow(y - other.y, 2));
+    }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return new Location(getWorld(), getX(), getY(), getZ());
     }
+
     @Override
-    public String toString(){
+    public String toString() {
         return "[" + this.x + ", " + this.y + ", " + this.z + "]";
     }
 

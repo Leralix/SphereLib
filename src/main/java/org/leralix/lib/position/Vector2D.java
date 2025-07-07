@@ -19,19 +19,19 @@ public class Vector2D {
         this.worldID = worldID;
     }
 
-    public Vector2D(Location location){
+    public Vector2D(Location location) {
         this.x = location.getBlockX();
         this.z = location.getBlockZ();
         this.worldID = location.getWorld().getUID().toString();
     }
 
-    public Vector2D(Chunk chunk){
+    public Vector2D(Chunk chunk) {
         this.x = chunk.getX();
         this.z = chunk.getZ();
         this.worldID = chunk.getWorld().getUID().toString();
     }
 
-    public Vector2D(Vector3D vector){
+    public Vector2D(Vector3D vector) {
         this.x = vector.getX();
         this.z = vector.getZ();
         this.worldID = vector.getWorldID().toString();
@@ -53,11 +53,16 @@ public class Vector2D {
         this.z = z;
     }
 
-    public UUID getWorldID(){
+    public UUID getWorldID() {
         return UUID.fromString(worldID);
     }
-    public World getWorld(){
+
+    public World getWorld() {
         return Bukkit.getWorld(getWorldID());
+    }
+
+    public double getDistance(Vector2D other) {
+        return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(z - other.z, 2));
     }
 
     @Override
