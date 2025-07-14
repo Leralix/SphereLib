@@ -24,7 +24,12 @@ public class ParticleUtils {
      * @param seconds   The amount of time to show the box for
      */
     public static void showBox(Plugin plugin, Player player, Vector3D point1, Vector3D point2, int seconds){
-        ParticleTask particleTask = new ParticleTask(player, point1, point2, seconds);
+        ParticleTask particleTask = new ParticleTask(player, point1, point2, seconds, Type.BOX);
+        particleTask.runTaskTimer(plugin, 0, 20);
+    }
+
+    public static void drawLine(Plugin plugin, Player player, Vector3D point1, Vector3D point2, int seconds){
+        ParticleTask particleTask = new ParticleTask(player, point1, point2, seconds, Type.LINE);
         particleTask.runTaskTimer(plugin, 0, 20);
     }
 
@@ -36,17 +41,23 @@ public class ParticleUtils {
         private final Vector3D p1;
         private final Vector3D p2;
         private int secondsLeft;
+        private final Type type;
 
-        public ParticleTask(Player player, Vector3D p1, Vector3D p2, int duration) {
+        protected ParticleTask(Player player, Vector3D p1, Vector3D p2, int duration, Type type) {
             this.player = player;
             this.p1 = p1;
             this.p2 = p2;
             this.secondsLeft = duration;
+            this.type = type;
         }
         @Override
         public void run() {
             if (player != null && secondsLeft > 0) {
-                ParticleUtils.drawBox(player, this.p1, this.p2);
+                switch (type){
+                    case BOX -> ParticleUtils.drawBox(player, this.p1, this.p2);
+                    case LINE -> ParticleUtils.drawLine(player, this.p1, this.p2);
+                }
+
                 secondsLeft--;
                 if (secondsLeft == 0) {
                     cancel();
@@ -63,7 +74,7 @@ public class ParticleUtils {
      * @param point1    The first point of the box
      * @param point2    The second point of the box
      */
-    public static void drawBox(Player player, Vector3D point1, Vector3D point2) {
+    private static void drawBox(Player player, Vector3D point1, Vector3D point2) {
         double minX = Math.min(point1.getX(), point2.getX());
         double minY = Math.min(point1.getY(), point2.getY());
         double minZ = Math.min(point1.getZ(), point2.getZ());
@@ -90,6 +101,10 @@ public class ParticleUtils {
         drawLine(player, minX, minY, maxZ, minX, maxY, maxZ);
     }
 
+    private static void drawLine(Player player, Vector3D point1, Vector3D point2){
+        drawLine(player, point1.getX(), point1.getY(), point1.getZ(), point2.getX(), point2.getY(), point2.getZ());
+    }
+
     /**
      * Draw a line between 2 points.
      * @param player    The player to show the line to
@@ -112,5 +127,10 @@ public class ParticleUtils {
             Location loc = new Location(player.getWorld(), x1 + dx * i, y1 + dy * i, z1 + dz * i);
             player.spawnParticle(Particle.DRAGON_BREATH, loc, 0, 0, 0, 0, 1, null);
         }
+    }
+
+    private enum Type{
+        BOX,
+        LINE
     }
 }
