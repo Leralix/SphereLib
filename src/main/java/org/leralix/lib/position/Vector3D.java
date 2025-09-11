@@ -29,6 +29,18 @@ public class Vector3D extends Vector2D {
         return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(z - other.z, 2) + Math.pow(y - other.y, 2));
     }
 
+    /**
+     * Compute a 3 dimension area between two Vector3D
+     * @param other The second Vector3D
+     * @return A 3 dimension area between two Vector3D
+     */
+    public int getArea(Vector3D other){
+        int lineX = Math.abs(x - other.getX());
+        int lineY = Math.abs(y - other.getY());
+        int lineZ = Math.abs(z - other.getZ());
+        return lineX * lineY * lineZ;
+    }
+
     public Location getLocation() {
         return new Location(getWorld(), getX(), getY(), getZ());
     }

@@ -65,6 +65,17 @@ public class Vector2D {
         return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(z - other.z, 2));
     }
 
+    /**
+     * Compute a 2 dimension area between two Vector3D
+     * @param other The second Vector3D
+     * @return A 2 dimension area between two Vector3D
+     */
+    public int getArea(Vector2D other){
+        int lineX = Math.abs(x - other.getX());
+        int lineZ = Math.abs(z - other.getZ());
+        return lineX * lineZ;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
