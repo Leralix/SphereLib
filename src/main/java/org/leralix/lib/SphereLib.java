@@ -11,11 +11,15 @@ import org.leralix.lib.utils.config.ConfigUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class SphereLib extends JavaPlugin {
+public class SphereLib extends JavaPlugin {
+
+    public SphereLib(){
+          super();
+    }
 
     public static Plugin plugin;
 
-    public static final PluginVersion pluginVersion = new PluginVersion(0,5,0);
+    public static final PluginVersion pluginVersion = new PluginVersion(0,5,2);
 
     @Override
     public void onEnable() {
