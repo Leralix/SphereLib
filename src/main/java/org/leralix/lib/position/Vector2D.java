@@ -61,6 +61,10 @@ public class Vector2D {
         return Bukkit.getWorld(getWorldID());
     }
 
+    public Chunk getChunk(){
+        return getWorld().getChunkAt(x, z);
+    }
+
     public double getDistance(Vector2D other) {
         return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(z - other.z, 2));
     }
