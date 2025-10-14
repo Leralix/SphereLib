@@ -104,9 +104,9 @@ public class ParticleUtils {
         double minX = Math.min(point1.getX(), point2.getX());
         double minY = Math.min(point1.getY(), point2.getY());
         double minZ = Math.min(point1.getZ(), point2.getZ());
-        double maxX = Math.max(point1.getX(), point2.getX());
-        double maxY = Math.max(point1.getY(), point2.getY());
-        double maxZ = Math.max(point1.getZ(), point2.getZ());
+        double maxX = Math.max(point1.getX(), point2.getX()) + 1.;
+        double maxY = Math.max(point1.getY(), point2.getY()) + 1.;
+        double maxZ = Math.max(point1.getZ(), point2.getZ()) + 1.;
 
         // Draw bottom edges
         drawLine(player, minX, minY, minZ, maxX, minY, minZ, particle); // Bottom front
