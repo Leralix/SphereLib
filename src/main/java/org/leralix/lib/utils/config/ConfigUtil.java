@@ -12,24 +12,32 @@ import java.util.*;
  * This class is used for config related utilities.
  */
 public class ConfigUtil {
+
     ConfigUtil() {
         throw new IllegalStateException("Utility class");
     }
 
     /**
      * This map is used to store the custom configs.
+     *
+     * @deprecated this map is static and entries are being replaced between plugins
      */
+    @Deprecated(since = "0.6.1")
     static final Map<ConfigTag, FileConfiguration> configs = new EnumMap<>(ConfigTag.class);
 
     /**
      * Get a custom config by its name.
      *
+     *
      * @param tag The tag of the config file.
      * @return The {@link FileConfiguration } object.
      */
+    @Deprecated(since = "0.6.1")
     public static FileConfiguration getCustomConfig(final ConfigTag tag) {
         return configs.get(tag);
     }
+
+    @Deprecated
     public static void addCustomConfig(Plugin plugin, String fileName, ConfigTag tag) {
         File configFile = new File(plugin.getDataFolder(), fileName);
         if (!configFile.exists()) {
@@ -49,8 +57,7 @@ public class ConfigUtil {
         configs.put(tag, YamlConfiguration.loadConfiguration(file));
     }
 
-
-
+    @Deprecated
     static boolean containsKey(Collection<String> blackListedWords, String key) {
         for (String word : blackListedWords) {
             if (key.startsWith(word)) {
@@ -69,11 +76,11 @@ public class ConfigUtil {
      *
      * @param fileName The name of the resource file.
      */
-    public static void saveAndUpdateResource(Plugin plugin, final String fileName, Collection<String> sectionBlacklist) {
+    public static YamlConfiguration saveAndUpdateResource(Plugin plugin, final String fileName, Collection<String> sectionBlacklist) {
         File currentFile = new File(plugin.getDataFolder(), fileName);
         if (!currentFile.exists()) {
             plugin.saveResource(fileName, false);
-            return;
+            return YamlConfiguration.loadConfiguration(currentFile);
         }
 
         InputStream baseFile = plugin.getResource(fileName);
@@ -81,12 +88,13 @@ public class ConfigUtil {
         List<String> baseFileLines = loadFileAsList(baseFile);
         List<String> currentFileLines = loadFileAsList(currentFile);
 
-        Optional<List<String>> test = mergeAndPreserveLines(baseFileLines, currentFileLines, sectionBlacklist);
+        Optional<List<String>> mergedLines = mergeAndPreserveLines(baseFileLines, currentFileLines, sectionBlacklist);
 
-        test.ifPresent(list -> {
+        mergedLines.ifPresent(list -> {
             writeToFile(list, currentFile);
             plugin.getLogger().info(() -> "The file " + fileName + " has been updated with missing lines.");
         });
+        return YamlConfiguration.loadConfiguration(currentFile);
     }
 
     /**
@@ -233,7 +241,7 @@ public class ConfigUtil {
 
     private static int findLineIndexWithKey(List<String> lines, int startIndex, String key) {
         //Due to the use of blank lines, startIndex can be -1.In this case.
-        if(startIndex < 0)
+        if (startIndex < 0)
             startIndex = 0;
 
         for (int i = startIndex; i < lines.size(); i++) {

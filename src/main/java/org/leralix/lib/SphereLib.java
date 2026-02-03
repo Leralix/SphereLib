@@ -19,7 +19,7 @@ public class SphereLib extends JavaPlugin {
 
     public static Plugin plugin;
 
-    public static final PluginVersion pluginVersion = new PluginVersion(0,6,0);
+    public static final PluginVersion pluginVersion = new PluginVersion(0,6,1);
 
     @Override
     public void onEnable() {
