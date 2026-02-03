@@ -67,8 +67,8 @@ public class ConfigUtil {
         return false;
     }
 
-    public static void saveAndUpdateResource(Plugin plugin, final String fileName) {
-        saveAndUpdateResource(plugin, fileName, Collections.emptyList());
+    public static YamlConfiguration saveAndUpdateResource(Plugin plugin, final String fileName) {
+        return saveAndUpdateResource(plugin, fileName, Collections.emptyList());
     }
 
     /**
