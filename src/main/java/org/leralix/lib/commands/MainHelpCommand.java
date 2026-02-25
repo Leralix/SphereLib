@@ -12,7 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainHelpCommand extends PlayerSubCommand {
-    CommandManager commandManager;
+
+    /**
+     * The command manager to which this help command belongs.
+     * Used to get the list of subcommands and the name of the command manager for the pagination.
+     */
+    private final CommandManager commandManager;
+
     public MainHelpCommand(CommandManager commandManager){
         this.commandManager = commandManager;
     }
