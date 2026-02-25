@@ -160,12 +160,23 @@ public class ConfigUtil {
         int indexActual = 0;
         int bannedSectionIndentation = 0;
         boolean inBannedSection = false;
+        int skipSectionIndentation = 0;
+        boolean inSkipedSection = false;
+
 
         PluginSideBlacklist pluginSideBlacklist = new PluginSideBlacklist(sectionBlacklist);
 
 
         for (String pluginFileLine : pluginFileLines) {
 
+            if(inSkipedSection){
+                if (!isLastLine(pluginFileLines, pluginFileLine) && (getNbIndentation(pluginFileLine) > skipSectionIndentation || pluginFileLine.isBlank())) {
+                    continue;
+                }
+                else {
+                    inSkipedSection = false;
+                }
+            }
 
             //Banned section handling. Keep adding actual lines until the end of the banned section is reached.
             if (inBannedSection) {
@@ -208,6 +219,8 @@ public class ConfigUtil {
             if (containsKey(sectionBlacklist, pluginKey)) {
                 inBannedSection = true;
                 bannedSectionIndentation = getNbIndentation(pluginFileLine);
+                inSkipedSection = true;
+                skipSectionIndentation = getNbIndentation(pluginFileLine);
                 indexActual++;
                 mergedLines.add(pluginFileLine);
                 if (!currentKey.equals(pluginKey)) {
@@ -237,6 +250,10 @@ public class ConfigUtil {
         }
 
         return updated ? Optional.of(mergedLines) : Optional.empty();
+    }
+
+    private static boolean isLastLine(List<String> pluginFileLines, String pluginFileLine) {
+        return pluginFileLines.get(pluginFileLines.size() - 1).equals(pluginFileLine);
     }
 
     private static int findLineIndexWithKey(List<String> lines, int startIndex, String key) {

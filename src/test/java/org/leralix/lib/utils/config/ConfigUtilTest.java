@@ -2,8 +2,6 @@ package org.leralix.lib.utils.config;
 
 import org.junit.jupiter.api.Test;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,13 +119,20 @@ class ConfigUtilTest {
         List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "exotictrades/firstInput.yml"));
         List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "exotictrades/modifiedInput.yml"));
 
-        List<String> blackList = new ArrayList<>();
-        blackList.add("rareRessources");
-        blackList.add("stockMarket");
-        blackList.add("marketItem");
-        Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, blackList);
+        Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, List.of("rareRessources", "stockMarket", "marketItem"));
 
         assertTrue(fileToWrite.isPresent());
         assertTrue(fileToWrite.get().contains("    enabled: true"));
+    }
+
+    @Test
+    void tanMapConfigTest(){
+        ClassLoader classLoader = getClass().getClassLoader();
+        List<String> currentText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "tanMap/config.yml"));
+        List<String> referenceText = ConfigUtil.loadFileAsList(classLoader.getResourceAsStream(PATH + "tanMap/configReference.yml"));
+
+        Optional<List<String>> fileToWrite = ConfigUtil.mergeAndPreserveLines(referenceText, currentText, List.of("worlds"));
+
+        assertTrue(fileToWrite.isEmpty());
     }
 }
