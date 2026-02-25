@@ -19,8 +19,11 @@ public class MainHelpCommand extends PlayerSubCommand {
      */
     private final CommandManager commandManager;
 
+    private final String mainCommandName;
+
     public MainHelpCommand(CommandManager commandManager){
         this.commandManager = commandManager;
+        mainCommandName = commandManager.getName();
     }
 
     @Override
@@ -40,7 +43,7 @@ public class MainHelpCommand extends PlayerSubCommand {
 
     @Override
     public String getSyntax() {
-        return "/tan help <page n°>";
+        return "/" + mainCommandName + " help <page n°>";
     }
 
     @Override
